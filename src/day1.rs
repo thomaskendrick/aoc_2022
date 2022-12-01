@@ -1,15 +1,13 @@
-const INPUT: &str = include_str!("../input/day1.txt");
-
-fn part1() -> i32 {
-    INPUT
+fn part1(input: &str) -> i32 {
+    input
         .split("\n\n")
         .map(|g| g.lines().map(|l| l.parse::<i32>().unwrap()).sum())
         .max()
         .unwrap()
 }
 
-fn part2() -> i32 {
-    let mut e: Vec<_> = INPUT
+fn part2(input: &str) -> i32 {
+    let mut e: Vec<_> = input
         .split("\n\n")
         .map(|g| g.lines().map(|l| l.parse::<i32>().unwrap()).sum())
         .collect();
@@ -18,5 +16,6 @@ fn part2() -> i32 {
 }
 
 fn main() {
-    aoc2022::solve_puzzles(part1, part2)
+    let input = include_str!("../input/day1.txt");
+    aoc2022::solve_puzzles(input, part1, part2)
 }
