@@ -1,10 +1,20 @@
-const INPUT: &'static str = include_str!("../input/day1.txt");
+const INPUT: &str = include_str!("../input/day1.txt");
 
 fn part1() -> i32 {
-    unimplemented!()
+    INPUT
+        .split("\n\n")
+        .map(|g| g.lines().map(|l| l.parse::<i32>().unwrap()).sum())
+        .max()
+        .unwrap()
 }
+
 fn part2() -> i32 {
-    unimplemented!()
+    let mut e: Vec<_> = INPUT
+        .split("\n\n")
+        .map(|g| g.lines().map(|l| l.parse::<i32>().unwrap()).sum())
+        .collect();
+    e.sort();
+    e[e.len() - 3..e.len()].iter().sum()
 }
 
 fn main() {
