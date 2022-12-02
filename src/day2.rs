@@ -1,4 +1,4 @@
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 enum Roshambo {
     Rock,
     Paper,
@@ -7,21 +7,40 @@ enum Roshambo {
 
 type Strat = (Roshambo, Roshambo);
 
-fn parse_strat(s: &str) -> Strat {
-    let spl = s.split_once(" ").unwrap();
+fn parse_strat(s: &str, v2: bool) -> Strat {
+    let spl = s.split_once(' ').unwrap();
     let them = match spl.0 {
         "A" => Roshambo::Rock,
         "B" => Roshambo::Paper,
         "C" => Roshambo::Scissors,
         _ => panic!(),
     };
-    let us = match spl.1 {
-        "X" => Roshambo::Rock,
-        "Y" => Roshambo::Paper,
-        "Z" => Roshambo::Scissors,
-        _ => panic!(),
-    };
-    (them, us)
+
+    if !v2 {
+        let us = match spl.1 {
+            "X" => Roshambo::Rock,
+            "Y" => Roshambo::Paper,
+            "Z" => Roshambo::Scissors,
+            _ => panic!(),
+        };
+        (them, us)
+    } else {
+        let us = match spl.1 {
+            "X" => match them {
+                Roshambo::Rock => Roshambo::Scissors,
+                Roshambo::Paper => Roshambo::Rock,
+                Roshambo::Scissors => Roshambo::Paper,
+            },
+            "Y" => them.clone(),
+            "Z" => match them {
+                Roshambo::Rock => Roshambo::Paper,
+                Roshambo::Paper => Roshambo::Scissors,
+                Roshambo::Scissors => Roshambo::Rock,
+            },
+            _ => panic!(),
+        };
+        (them, us)
+    }
 }
 
 fn calc_choice_score((_, us): &Strat) -> i32 {
@@ -43,7 +62,7 @@ fn calc_winner_score(strat: &Strat) -> i32 {
 }
 
 fn part1(input: &str) -> i32 {
-    let strats: Vec<_> = input.lines().map(|l| parse_strat(l)).collect();
+    let strats: Vec<_> = input.lines().map(|l| parse_strat(l, false)).collect();
     let mut score = 0;
     for strat in strats {
         score += calc_choice_score(&strat);
@@ -53,7 +72,13 @@ fn part1(input: &str) -> i32 {
 }
 
 fn part2(input: &str) -> i32 {
-    unimplemented!();
+    let strats: Vec<_> = input.lines().map(|l| parse_strat(l, true)).collect();
+    let mut score = 0;
+    for strat in strats {
+        score += calc_choice_score(&strat);
+        score += calc_winner_score(&strat);
+    }
+    score
 }
 
 fn main() {
@@ -68,13 +93,12 @@ mod tests {
 
     #[test]
     fn parse_test() {
-        assert_eq!(parse_strat("B X"), (Roshambo::Paper, Roshambo::Rock));
+        assert_eq!(parse_strat("B X", false), (Roshambo::Paper, Roshambo::Rock));
     }
 
     #[test]
-    fn choice_score_test(){
+    fn choice_score_test() {
         assert_eq!(calc_choice_score(&(Roshambo::Rock, Roshambo::Paper)), 2);
-
     }
 
     #[test]
