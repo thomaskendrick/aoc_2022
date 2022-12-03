@@ -7,17 +7,10 @@ fn char_to_priority(c: char) -> i32 {
 }
 
 fn part1(input: &str) -> i32 {
-    let mut total = 0;
-    'outer: for backpack in input.lines() {
-        let (c1, c2) = backpack.split_at(backpack.len() / 2);
-        for char in c2.chars() {
-            if c1.contains(char) {
-                total += char_to_priority(char);
-                continue 'outer;
-            }
-        }
-    }
-    total
+    input.lines().fold(0, |acc, bp| {
+        let (c1, c2) = bp.split_at(bp.len() / 2);
+        acc + char_to_priority(c2.chars().find(|c| c1.contains(*c)).unwrap())
+    })
 }
 
 fn part2(input: &str) -> i32 {
