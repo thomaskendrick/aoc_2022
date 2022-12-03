@@ -14,22 +14,17 @@ fn part1(input: &str) -> i32 {
 }
 
 fn part2(input: &str) -> i32 {
-    let mut total = 0;
-    for g in input.lines().collect::<Vec<_>>().chunks(3) {
-        let mut common: Vec<char> = Vec::new();
-        for c in g[1].chars() {
-            if g[0].contains(c) {
-                common.push(c);
-            }
-        }
-        for c in g[2].chars() {
-            if common.contains(&c) {
-                total += char_to_priority(c);
-                break;
-            }
-        }
-    }
-    total
+    input
+        .lines()
+        .collect::<Vec<_>>()
+        .chunks(3)
+        .fold(0, |acc, g| {
+            acc + char_to_priority(
+                g[2].chars()
+                    .find(|c| g[0].contains(*c) && g[1].contains(*c))
+                    .unwrap(),
+            )
+        })
 }
 
 fn main() {
