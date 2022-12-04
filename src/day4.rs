@@ -1,23 +1,19 @@
-use std::ops::RangeInclusive;
-
-fn parse_to_range(s: &str) -> RangeInclusive<i32> {
-    let (start, end) = s.split_once('-').unwrap();
-    start.parse::<i32>().unwrap()..=end.parse::<i32>().unwrap()
+type Assignment = (i32, i32);
+fn parse_to_assignment(s: &str) -> Assignment {
+    let (s, e) = s.split_once('-').unwrap();
+    (s.parse().unwrap(), e.parse().unwrap())
 }
 
-fn parse_line(l: &str) -> (RangeInclusive<i32>, RangeInclusive<i32>) {
-    let (e1, e2) = l.split_once(',').unwrap();
-    (parse_to_range(e1), parse_to_range(e2))
+fn parse_line(l: &str) -> (Assignment, Assignment) {
+    let (a1, a2) = l.split_once(',').unwrap();
+    (parse_to_assignment(a1), parse_to_assignment(a2))
 }
 
 fn part1(input: &str) -> usize {
     input
         .lines()
         .map(parse_line)
-        .filter(|(r1, r2)| {
-            (r1.start() >= r2.start() && r1.end() <= r2.end())
-                || (r1.start() <= r2.start() && r1.end() >= r2.end())
-        })
+        .filter(|((s1, e1), (s2, e2))| (s1 >= s2 && e1 <= e2) || (s1 <= s2 && e1 >= e2))
         .count()
 }
 
@@ -25,7 +21,7 @@ fn part2(input: &str) -> usize {
     input
         .lines()
         .map(parse_line)
-        .filter(|(r1, r2)| !((r1.end() < r2.start()) || (r2.end() < r1.start())))
+        .filter(|((s1, e1), (s2, e2))| !((e1 < s2) || (e2 < s1)))
         .count()
 }
 
@@ -41,11 +37,11 @@ mod tests {
 
     #[test]
     fn parse_to_range_test() {
-        assert_eq!(parse_to_range("2-4"), 2..=4)
+        assert_eq!(parse_to_assignment("2-4"), (2, 4))
     }
     #[test]
     fn parse_line_test() {
-        assert_eq!(parse_line("1-3,2-4"), (1..=3, 2..=4))
+        assert_eq!(parse_line("1-3,2-4"), ((1, 3), (2, 4)))
     }
 
     #[test]
