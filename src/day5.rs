@@ -11,22 +11,16 @@ impl Stacks {
         }
 
         for line in lines {
-            let letters: Vec<Option<char>> = line
+            let chars: Vec<char> = line
                 .chars()
-                .map(|c| {
-                    if c.is_alphabetic() {
-                        return Some(c);
-                    }
-                    None
-                })
                 .collect();
             for (i, stack) in stacks.iter_mut().enumerate() {
-                if let Some(c) = letters[1 + (i * 4)] {
-                    stack.push(c)
+                let target = 1 + (i * 4);
+                if chars[target].is_alphabetic() {
+                    stack.push(chars[target])
                 }
             }
         }
-
         Stacks(stacks)
     }
 
