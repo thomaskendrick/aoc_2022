@@ -1,24 +1,20 @@
 use std::collections::HashSet;
 
-fn detect_uniq_marker(input: &str, n: usize) -> i32 {
-    let chars = input.chars().collect::<Vec<char>>();
-    let (pos, _) = chars
+fn detect_uniq_marker(input: &str, n: usize) -> usize {
+    input
+        .chars()
+        .collect::<Vec<char>>()
         .windows(n)
-        .enumerate()
-        .find(|(_, window)| {
-            let mut uniq: HashSet<char> = HashSet::new();
-            window.iter().all(|c| uniq.insert(*c));
-            uniq.len() == n
-        })
-        .unwrap();
-    pos as i32 + n as i32
+        .position(|window| window.iter().copied().collect::<HashSet<char>>().len() == n)
+        .unwrap()
+        + n
 }
 
-fn part1(input: &str) -> i32 {
+fn part1(input: &str) -> usize {
     detect_uniq_marker(input, 4)
 }
 
-fn part2(input: &str) -> i32 {
+fn part2(input: &str) -> usize {
     detect_uniq_marker(input, 14)
 }
 
