@@ -31,13 +31,9 @@ impl Stacks {
         }
     }
     fn execute_with_cratemover9001(&mut self, i: Instruction) {
-        let mut sub_stack: Vec<char> = Vec::new();
-        for _ in 0..i.number {
-            let cargo = self.0[i.source].pop().unwrap();
-            sub_stack.push(cargo);
-        }
-        sub_stack.reverse();
-        self.0[i.destination].append(&mut sub_stack)
+        let idx = self.0[i.source].len() - i.number as usize;
+        let mut pile = self.0[i.source].split_off(idx);
+        self.0[i.destination].append(&mut pile)
     }
     fn read_top_cargo(&self) -> String {
         let mut message = String::new();
