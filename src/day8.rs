@@ -16,9 +16,6 @@ impl Tree {
         let mut is_vis = true;
 
         // Check north
-        if self.y == 0 {
-            return true;
-        };
         for i in 0..self.y {
             if map[i][self.x].height >= self.height {
                 is_vis = false;
@@ -30,9 +27,6 @@ impl Tree {
 
         // Check south
         is_vis = true;
-        if self.y == m_height - 1 {
-            return true;
-        };
         for i in self.y + 1..m_height {
             if map[i][self.x].height >= self.height {
                 is_vis = false;
@@ -44,9 +38,6 @@ impl Tree {
 
         // Check east
         is_vis = true;
-        if self.x == m_width - 1 {
-            return true;
-        };
         for i in self.x + 1..m_width {
             if map[self.y][i].height >= self.height {
                 is_vis = false;
@@ -58,9 +49,6 @@ impl Tree {
 
         // Check west
         is_vis = true;
-        if self.x == 0 {
-            return true;
-        };
         for i in 0..self.x {
             if map[self.y][i].height >= self.height {
                 is_vis = false;
@@ -69,7 +57,7 @@ impl Tree {
         is_vis
     }
     fn calc_score(&self, map: &Map) -> usize {
-        let mut score = (0,0,0,0);
+        let mut score = (0, 0, 0, 0);
         let m_height = map.len();
         let m_width = map[0].len();
         // Check north
@@ -101,7 +89,6 @@ impl Tree {
             }
         }
         score.0 * score.1 * score.2 * score.3
-
     }
 }
 
