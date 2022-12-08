@@ -68,6 +68,41 @@ impl Tree {
         }
         is_vis
     }
+    fn calc_score(&self, map: &Map) -> usize {
+        let mut score = (0,0,0,0);
+        let m_height = map.len();
+        let m_width = map[0].len();
+        // Check north
+        for i in (0..self.y).rev() {
+            score.0 += 1;
+            if map[i][self.x].height >= self.height {
+                break;
+            }
+        }
+        // Check south
+        for i in self.y + 1..m_height {
+            score.1 += 1;
+            if map[i][self.x].height >= self.height {
+                break;
+            }
+        }
+        // Check east
+        for i in self.x + 1..m_width {
+            score.2 += 1;
+            if map[self.y][i].height >= self.height {
+                break;
+            }
+        }
+        // Check west
+        for i in (0..self.x).rev() {
+            score.3 += 1;
+            if map[self.y][i].height >= self.height {
+                break;
+            }
+        }
+        score.0 * score.1 * score.2 * score.3
+
+    }
 }
 
 type Map = Vec<Vec<Tree>>;
@@ -94,7 +129,12 @@ fn part1(input: &str) -> usize {
 }
 
 fn part2(input: &str) -> usize {
-    0
+    let map = create_map(input);
+    map.iter()
+        .flatten()
+        .map(|t| t.calc_score(&map))
+        .max()
+        .unwrap()
 }
 
 fn main() {
@@ -109,27 +149,30 @@ mod tests {
     #[test]
     fn check_visible_test() {
         let map = create_map(EXAMPLE);
-        let tree = dbg!(&map[1][1]);
+        let tree = &map[1][1];
         assert!(tree.check_visible(&map));
-        let tree = dbg!(&map[1][2]);
+        let tree = &map[1][2];
         assert!(tree.check_visible(&map));
-        let tree = dbg!(&map[2][1]);
+        let tree = &map[2][1];
         assert!(tree.check_visible(&map));
-        let tree = dbg!(&map[2][3]);
+        let tree = &map[2][3];
         assert!(tree.check_visible(&map));
     }
     #[test]
     fn check_not_vis() {
         let map = create_map(EXAMPLE);
-        let tree = dbg!(&map[2][2]);
+        let tree = &map[2][2];
         assert!(!tree.check_visible(&map));
     }
     #[test]
-    fn part_1_test() {
-        assert_eq!(part1(EXAMPLE), 21);
+    fn check_score() {
+        let map = create_map(EXAMPLE);
+        let tree = &map[1][2];
+        assert_eq!(tree.calc_score(&map), 4);
     }
 
-    fn part_2_test() {
-        assert_eq!(part2(EXAMPLE), 0);
+    #[test]
+    fn part_1_test() {
+        assert_eq!(part1(EXAMPLE), 21);
     }
 }
