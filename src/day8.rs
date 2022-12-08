@@ -43,11 +43,9 @@ impl Tree {
         !n_blocked || !s_blocked || !e_blocked || !w_blocked
     }
     fn calc_score(&self, map: &Map) -> usize {
-        let m_height = map.len();
-        let m_width = map[0].len();
         let ns = self.score_dir(map, (0..self.y).rev(), true);
-        let ss = self.score_dir(map, self.y + 1..m_height, true);
-        let es = self.score_dir(map, self.x + 1..m_width, false);
+        let ss = self.score_dir(map, self.y + 1..map.len(), true);
+        let es = self.score_dir(map, self.x + 1..map[0].len(), false);
         let ws = self.score_dir(map, (0..self.x).rev(), false);
         ns * ss * es * ws
     }
