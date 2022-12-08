@@ -12,83 +12,53 @@ impl Tree {
     fn check_visible(&self, map: &Map) -> bool {
         let m_height = map.len();
         let m_width = map[0].len();
-
-        let mut is_vis = true;
-
-        // Check north
-        for i in 0..self.y {
-            if map[i][self.x].height >= self.height {
-                is_vis = false;
-            }
-        }
-        if is_vis {
-            return true;
-        }
-
-        // Check south
-        is_vis = true;
-        for i in self.y + 1..m_height {
-            if map[i][self.x].height >= self.height {
-                is_vis = false;
-            }
-        }
-        if is_vis {
-            return true;
-        }
-
-        // Check east
-        is_vis = true;
-        for i in self.x + 1..m_width {
-            if map[self.y][i].height >= self.height {
-                is_vis = false;
-            }
-        }
-        if is_vis {
-            return true;
-        }
-
-        // Check west
-        is_vis = true;
-        for i in 0..self.x {
-            if map[self.y][i].height >= self.height {
-                is_vis = false;
-            }
-        }
-        is_vis
+        let n_blocked = (0..self.y)
+            .into_iter()
+            .any(|i| map[i][self.x].height >= self.height);
+        let s_blocked = (self.y + 1..m_height)
+            .into_iter()
+            .any(|i| map[i][self.x].height >= self.height);
+        let e_blocked = (self.x + 1..m_width)
+            .into_iter()
+            .any(|i| map[self.y][i].height >= self.height);
+        let w_blocked = (0..self.x)
+            .into_iter()
+            .any(|i| map[self.y][i].height >= self.height);
+        !n_blocked || !s_blocked || !e_blocked || !w_blocked
     }
     fn calc_score(&self, map: &Map) -> usize {
-        let mut score = (0, 0, 0, 0);
+        let (mut ns, mut ss, mut es, mut ws) = (0, 0, 0, 0);
         let m_height = map.len();
         let m_width = map[0].len();
         // Check north
         for i in (0..self.y).rev() {
-            score.0 += 1;
+            ns += 1;
             if map[i][self.x].height >= self.height {
                 break;
             }
         }
         // Check south
         for i in self.y + 1..m_height {
-            score.1 += 1;
+            ss += 1;
             if map[i][self.x].height >= self.height {
                 break;
             }
         }
         // Check east
         for i in self.x + 1..m_width {
-            score.2 += 1;
+            es += 1;
             if map[self.y][i].height >= self.height {
                 break;
             }
         }
         // Check west
         for i in (0..self.x).rev() {
-            score.3 += 1;
+            ws += 1;
             if map[self.y][i].height >= self.height {
                 break;
             }
         }
-        score.0 * score.1 * score.2 * score.3
+        ns * ss * es * ws 
     }
 }
 
