@@ -6,7 +6,7 @@ impl Stacks {
         let mut lines = s.lines().rev();
         let mut stacks = Vec::new();
 
-        for _ in lines.next().unwrap().trim().split_whitespace() {
+        for _ in lines.next().unwrap().split_whitespace() {
             stacks.push(Vec::new());
         }
 
@@ -67,7 +67,7 @@ fn part1(input: &str) -> String {
     let mut stacks = Stacks::new(picture);
     let instructions: Vec<Instruction> = instruction_str
         .lines()
-        .map(|l| Instruction::new(l))
+        .map(Instruction::new)
         .collect();
     for instruction in instructions {
         stacks.execute(instruction)
@@ -80,7 +80,7 @@ fn part2(input: &str) -> String {
     let mut stacks = Stacks::new(picture);
     let instructions: Vec<Instruction> = instruction_str
         .lines()
-        .map(|l| Instruction::new(l))
+        .map(Instruction::new)
         .collect();
     for instruction in instructions {
         stacks.execute_with_cratemover9001(instruction)

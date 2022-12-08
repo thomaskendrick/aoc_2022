@@ -53,14 +53,14 @@ fn build_fs(input: &str) -> Node {
     let mut cwd: &mut Node = &mut root;
 
     for l in input.lines() {
-        let (prefix, suffix) = l.split_once(" ").unwrap();
+        let (prefix, suffix) = l.split_once(' ').unwrap();
         match prefix {
             // We're processing a command
             "$" => {
                 if suffix == "ls" {
                     continue;
                 }
-                let (_, suffix) = suffix.split_once(" ").unwrap();
+                let (_, suffix) = suffix.split_once(' ').unwrap();
                 match suffix {
                     // Go to root
                     "/" => {
@@ -73,10 +73,8 @@ fn build_fs(input: &str) -> Node {
                             for dir in path[..path.len() - 1].to_vec() {
                                 if dir == "/" {
                                     cwd = &mut root;
-                                } else {
-                                    if let Node::Directory(_, children) = cwd {
-                                        cwd = children.get_mut(&dir).unwrap();
-                                    }
+                                } else if let Node::Directory(_, children) = cwd {
+                                    cwd = children.get_mut(&dir).unwrap();
                                 }
                             }
                         }
@@ -88,7 +86,7 @@ fn build_fs(input: &str) -> Node {
                             new_path.push(dir.to_string());
                             cwd = children
                                 .entry(dir.to_string())
-                                .or_insert(Node::Directory(new_path, Default::default()))
+                                .or_insert_with(|| Node::Directory(new_path, Default::default()))
                         }
                     }
                 }
