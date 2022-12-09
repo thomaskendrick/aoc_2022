@@ -35,3 +35,6 @@ path = "src/day7.rs"
 [[bin]]
 name = "day8"
 path = "src/day8.rs"
+
+[dependencies]
+kiss3d = "0.35.0"
