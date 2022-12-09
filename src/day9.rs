@@ -8,28 +8,13 @@ struct Rope {
     knots: Vec<Knot>,
     visits: VisitSet,
 }
-fn calc_tail_pos(h: &Knot, t: &Knot) -> Knot {
-    let (h_x, h_y) = h;
-    let (t_x, t_y) = t;
-    let d_x = h_x - t_x;
-    let d_y = h_y - t_y;
-    if d_x.abs() > 1 {
-        if d_y != 0 {
-            return (t_x + d_x.signum(), t_y + d_y.signum());
-        } else {
-            return (t_x + d_x.signum(), *t_y);
-        }
+fn calc_tail_pos((h_x, h_y): &Knot, (t_x, t_y): &Knot) -> Knot {
+    if (h_x - t_x).abs() > 1 || (h_y - t_y).abs() > 1 {
+        (t_x + (h_x - t_x).signum(), t_y + (h_y - t_y).signum())
+    } else {
+        (*t_x, *t_y)
     }
-    if d_y.abs() > 1 {
-        if d_x != 0 {
-            return (t_x + d_x.signum(), t_y + d_y.signum());
-        } else {
-            return (*t_x, t_y + d_y.signum());
-        }
-    }
-    *t
 }
-
 impl Rope {
     fn new(init_knots: usize) -> Self {
         Self {
@@ -40,12 +25,12 @@ impl Rope {
     fn read_instruction(&mut self, s: &str) {
         let (dir, dist) = s.split_once(' ').unwrap();
         for _ in 0..dist.parse::<u32>().unwrap() {
-            let (x, y) = self.knots[0];
+            let (ref mut x, ref mut y) = self.knots[0];
             match dir {
-                "U" => self.knots[0] = (x, y + 1),
-                "D" => self.knots[0] = (x, y - 1),
-                "L" => self.knots[0] = (x - 1, y),
-                "R" => self.knots[0] = (x + 1, y),
+                "U" => *y += 1,
+                "D" => *y -= 1, 
+                "L" => *x -= 1,
+                "R" => *x += 1,
                 _ => panic!(),
             }
             for i in 0..self.knots.len() - 1 {
