@@ -81,10 +81,9 @@ fn part1(input: &str) -> i32 {
     ss
 }
 
-fn part2(input: &str) -> i32 {
+fn part2(input: &str) -> String {
     let (_, output) = process_input(input);
-    print!("{}", output);
-    0
+    output
 }
 
 fn main() {
