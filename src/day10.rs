@@ -1,50 +1,33 @@
-use std::{error::Error, str::FromStr};
-
 #[derive(Debug)]
 enum OpCode {
     Add(i32),
     NoOp,
 }
 
-#[derive(Debug)]
-struct Sprite {
-    pixels: [bool; 40],
-}
-
-impl Sprite {
-    fn new() -> Self {
-        Self {
-            pixels: [false; 40],
-        }
-    }
-    fn set(&mut self, loc: i32) {
-        for (i, p) in self.pixels.iter_mut().enumerate() {
-            *p = loc >= i as i32 - 1 && loc <= i as i32 + 1
-        }
+type SpriteMask = [bool; 40];
+fn set_sprite_location(sm : &mut SpriteMask, loc: i32) {
+    for (i, p) in sm.iter_mut().enumerate() {
+        *p = loc >= i as i32 - 1 && loc <= i as i32 + 1
     }
 }
 
 struct Instruction(u8, OpCode);
-
-impl FromStr for Instruction {
-    type Err = Box<dyn Error>;
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+impl Instruction {
+    fn new (s: &str) -> Self {
         if let Some((_, val)) = s.split_once(' ') {
-            Ok(Self(2, OpCode::Add(val.parse()?)))
+            Self(2, OpCode::Add(val.parse().unwrap()))
         } else {
-            Ok(Self(1, OpCode::NoOp))
+            Self(1, OpCode::NoOp)
         }
     }
 }
 
 fn process_input(input: &str) -> (i32, String) {
-    let mut ops: Vec<Instruction> = input.lines().map(|l| l.parse().unwrap()).collect();
-    ops.reverse();
-
+    let mut ops: Vec<Instruction> = input.lines().rev().map(Instruction::new).collect();
     let mut cycle: u32 = 1;
     let mut register: i32 = 1;
     let mut signal_strength = 0;
-    let mut sprite = Sprite::new();
+    let mut sprite_mask = [false; 40];
     let mut display_output = String::new();
     let Instruction(mut timer, mut opcode): Instruction = ops.pop().unwrap();
     while timer > 0 || !ops.is_empty() {
@@ -58,8 +41,8 @@ fn process_input(input: &str) -> (i32, String) {
             }
         }
         timer -= 1;
-        sprite.set(register);
-        display_output.push(if sprite.pixels[((cycle - 1) % 40) as usize] {
+        set_sprite_location(&mut sprite_mask, register);
+        display_output.push(if sprite_mask[((cycle - 1) % 40) as usize] {
             '🟩'
         } else {
             '⬛'
