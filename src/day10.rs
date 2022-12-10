@@ -7,21 +7,19 @@ enum OpCode {
 }
 
 #[derive(Debug)]
-struct Sprite{
-    pixels : [bool; 40]
+struct Sprite {
+    pixels: [bool; 40],
 }
 
 impl Sprite {
     fn new() -> Self {
-        Self{pixels:[false; 40]}
+        Self {
+            pixels: [false; 40],
+        }
     }
     fn set(&mut self, loc: i32) {
         for (i, p) in self.pixels.iter_mut().enumerate() {
-            if loc == i as i32 || loc == i as i32 - 1 || loc == i as i32 + 1 {
-                *p = true;
-            } else {
-                *p = false;
-            }
+            *p = loc >= i as i32 - 1 && loc <= i as i32 + 1
         }
     }
 }
@@ -49,7 +47,7 @@ fn process_input(input: &str) -> (i32, String) {
     let mut sprite = Sprite::new();
     let mut display_output = String::new();
     let Instruction(mut timer, mut opcode): Instruction = ops.pop().unwrap();
-    while timer > 0 || !ops.is_empty()  {
+    while timer > 0 || !ops.is_empty() {
         if timer == 0 {
             if let OpCode::Add(x) = opcode {
                 register += x;
@@ -61,11 +59,12 @@ fn process_input(input: &str) -> (i32, String) {
         }
         timer -= 1;
         sprite.set(register);
-        if sprite.pixels[((cycle - 1) % 40) as usize] {
-            display_output.push('🟩');
+        display_output.push(if sprite.pixels[((cycle - 1) % 40) as usize] {
+            '🟩'
         } else {
-            display_output.push('⬛');
-        }
+            '⬛'
+        });
+
         if ((cycle) % 40) == 0 {
             display_output.push('\n');
         }
