@@ -7,15 +7,16 @@ enum OpCode {
 }
 
 #[derive(Debug)]
-struct Sprite([bool; 40]);
+struct Sprite{
+    pixels : [bool; 40]
+}
 
 impl Sprite {
     fn new() -> Self {
-        Self([false; 40])
+        Self{pixels:[false; 40]}
     }
     fn set(&mut self, loc: i32) {
-        let Sprite(pixels) = self;
-        for (i, p) in pixels.iter_mut().enumerate() {
+        for (i, p) in self.pixels.iter_mut().enumerate() {
             if loc == i as i32 || loc == i as i32 - 1 || loc == i as i32 + 1 {
                 *p = true;
             } else {
@@ -48,31 +49,26 @@ fn process_input(input: &str) -> (i32, String) {
     let mut sprite = Sprite::new();
     let mut display_output = String::new();
     let Instruction(mut timer, mut opcode): Instruction = ops.pop().unwrap();
-    while timer > 0 || !ops.is_empty() {
-        sprite.set(register);
-        let Sprite(pixels) = sprite;
-
-        if pixels[((cycle) % 40) as usize] {
-            display_output.push('#');
-        } else {
-            display_output.push('.');
-        }
-
-        if (cycle % 40) == 0 {
-            display_output.push('\n');
-        }
-
+    while timer > 0 || !ops.is_empty()  {
         if timer == 0 {
-            let new = ops.pop();
             if let OpCode::Add(x) = opcode {
                 register += x;
             }
-            if let Some(Instruction(new_timer, new_op)) = new {
+            if let Some(Instruction(new_timer, new_op)) = ops.pop() {
                 timer = new_timer;
                 opcode = new_op
             }
         }
         timer -= 1;
+        sprite.set(register);
+        if sprite.pixels[((cycle - 1) % 40) as usize] {
+            display_output.push('🟩');
+        } else {
+            display_output.push('⬛');
+        }
+        if ((cycle) % 40) == 0 {
+            display_output.push('\n');
+        }
         if ((cycle + 20) % 40) == 0 {
             signal_strength += cycle as i32 * register;
         }
@@ -88,7 +84,7 @@ fn part1(input: &str) -> i32 {
 
 fn part2(input: &str) -> i32 {
     let (_, output) = process_input(input);
-    print!("{output}");
+    print!("{}", output);
     0
 }
 
@@ -104,10 +100,5 @@ mod tests {
     #[test]
     fn part_1_test() {
         assert_eq!(part1(EXAMPLE), 13140);
-    }
-
-    #[test]
-    fn part_2_test() {
-        assert_eq!(part2(EXAMPLE), 1);
     }
 }
