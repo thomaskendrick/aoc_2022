@@ -94,7 +94,7 @@ impl PartialOrd for Node {
     }
 }
 
-fn a_star(map: &HeightMap, input: &str) -> Vec<Point> {
+fn a_star(map: &HeightMap, input: &str) -> Result<Vec<Point>, ()> {
     fn calc_f((x1, y1): Point, (x2, y2): Point) -> i32 {
         (x1 - x2).abs() + (y1 - y2).abs()
     }
@@ -145,13 +145,17 @@ fn a_star(map: &HeightMap, input: &str) -> Vec<Point> {
             }
         }
     }
-    shortest_path
+    if !shortest_path.is_empty() {
+        Ok(shortest_path)
+    } else {
+        Err(()) 
+    }
 }
 
 fn part1(input: &str) -> i32 {
     let map = input.parse::<HeightMap>().unwrap();
     let sp = a_star(&map, input);
-    sp.len() as i32 - 1
+    sp.unwrap().len() as i32 - 1
 }
 
 fn part2(input: &str) -> i32 {
@@ -165,9 +169,8 @@ fn part2(input: &str) -> i32 {
         .iter()
         .filter_map(|p| {
             map.start = *p;
-            let result = a_star(&map, input).len();
-            if result != 0 {
-                Some(result - 1)
+            if let Ok(sp) =a_star(&map, input) {
+                Some(sp.len() - 1)
             } else {
                 None
             }
@@ -192,6 +195,6 @@ mod tests {
 
     #[test]
     fn part_2_test() {
-        assert_eq!(part2(EXAMPLE), 0);
+        assert_eq!(part2(EXAMPLE), 29);
     }
 }
